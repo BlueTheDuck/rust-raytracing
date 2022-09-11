@@ -1,4 +1,4 @@
-use super::Object;
+use super::{Object, Intersection};
 use crate::{scene::Ray, color::{Color, MAGENTA}};
 
 pub struct Plane {
@@ -24,15 +24,18 @@ impl Plane {
     }
 }
 impl Object for Plane {
-    fn intersects(&self, ray: &Ray) -> bool {
+    fn distance(&self, ray: &Ray) -> Intersection {
         let denom = self.normal.dot(&ray.direction);
         if denom.abs() < f64::EPSILON {
-            return false;
+            return Intersection::Miss;
         }
         let t = (self.origin - ray.origin).dot(&self.normal) / denom;
-        /* println!("{t}"); */
+        if t < f64::EPSILON {
+            return Intersection::Miss;
+        }
+        // println!("{t}");
         /* TODO: Check for really big `t` t < 3.0 && */
-        t > 0.0
+        return Intersection::Hit(t);
     }
     fn color(&self) -> Color {
         self.color
