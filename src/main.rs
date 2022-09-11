@@ -1,6 +1,6 @@
 extern crate raytracer as rt;
 
-use std::time::{Instant, SystemTime};
+use std::time::SystemTime;
 
 use clap::Parser;
 use glium::{
@@ -12,7 +12,6 @@ use rt::{
     scene::{render, Camera},
     shapes::*,
 };
-use window::Vertex;
 
 mod window;
 
@@ -25,7 +24,7 @@ fn render_texture(width: u32, height: u32, display: &Display) -> glium::texture:
     let objects: Vec<Box<dyn Object>> = vec![
         // Cyan
         Box::new(Plane::new_with_color(
-            Vector::new(0.0, 0.0, 2.0),
+            Vector::new(0.0, 0.0, 15.0),
             Vector::new(0.0, 0.0, 1.0),
             Rgb([0, 255, 255]),
         )),

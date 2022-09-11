@@ -1,13 +1,16 @@
-use super::Object;
-use crate::{scene::Ray, color::{MAGENTA, Color}};
+use super::{Intersection, Object, Vector};
+use crate::{
+    color::{Color, MAGENTA},
+    scene::Ray,
+};
 
 pub struct Sphere {
-    pub origin: na::Vector3<f64>,
+    pub origin: Vector,
     pub radius: f64,
     pub color: Color,
 }
 impl Sphere {
-    pub fn new(origin: na::Vector3<f64>, radius: f64) -> Self {
+    pub fn new(origin: Vector, radius: f64) -> Self {
         debug_assert!(radius > 0.0);
         Sphere {
             origin,
@@ -15,7 +18,7 @@ impl Sphere {
             color: MAGENTA,
         }
     }
-    pub fn new_with_color(origin: na::Vector3<f64>, radius: f64, color: Color) -> Self {
+    pub fn new_with_color(origin: Vector, radius: f64, color: Color) -> Self {
         let this = Sphere::new(origin, radius);
         Sphere { color, ..this }
     }

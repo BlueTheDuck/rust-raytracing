@@ -1,5 +1,3 @@
-use image::Rgb;
-
 extern crate nalgebra as na;
 
 pub mod scene;

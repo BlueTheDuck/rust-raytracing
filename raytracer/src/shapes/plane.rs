@@ -1,13 +1,13 @@
-use super::{Object, Intersection};
+use super::{Object, Intersection, Vector};
 use crate::{scene::Ray, color::{Color, MAGENTA}};
 
 pub struct Plane {
-    pub origin: na::Vector3<f64>,
-    pub normal: na::Vector3<f64>,
+    pub origin: Vector,
+    pub normal: Vector,
     pub color: Color,
 }
 impl Plane {
-    pub fn new(origin: na::Vector3<f64>, normal: na::Vector3<f64>) -> Self {
+    pub fn new(origin: Vector, normal: Vector) -> Self {
         Plane {
             origin: origin.normalize(),
             normal: normal.normalize(),
@@ -15,8 +15,8 @@ impl Plane {
         }
     }
     pub fn new_with_color(
-        origin: na::Vector3<f64>,
-        normal: na::Vector3<f64>,
+        origin: Vector,
+        normal: Vector,
         color: Color,
     ) -> Self {
         let this = Plane::new(origin, normal);
