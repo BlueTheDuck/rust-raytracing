@@ -92,4 +92,7 @@ impl Object for Sphere {
     fn color(&self) -> Color {
         self.color
     }
+    fn into_shape(self) -> Shape {
+        Shape::Sphere(self)
+    }
 }

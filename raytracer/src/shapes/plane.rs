@@ -41,4 +41,7 @@ impl Object for Plane {
     fn color(&self) -> Color {
         self.color
     }
+    fn into_shape(self) -> Shape {
+        Shape::Plane(self)
+    }
 }

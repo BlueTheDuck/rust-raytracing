@@ -7,12 +7,12 @@ pub use ray::Ray;
 
 use crate::{
     color::Color,
-    shapes::{Intersection, Object},
+    shapes::{Intersection, Object, Shape},
 };
 
 pub fn render(
     framebuffer: &mut RgbImage,
-    objects: &[Box<dyn Object>],
+    objects: &[Shape],
     camera: &Camera,
     (width, height): (u32, u32),
 ) {
