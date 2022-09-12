@@ -12,31 +12,16 @@ use rt::{
     scene::{render, Camera},
     shapes::*,
 };
+use serde::Serialize;
 
 mod window;
 
-fn render_texture(width: u32, height: u32, display: &Display) -> glium::texture::SrgbTexture2d {
+fn render_texture(width: u32, height: u32, display: &Display, objects: &[Shape]) -> glium::texture::SrgbTexture2d {
     println!("Rendering {width}x{height}");
-    let now = SystemTime::now()
+    /* let now = SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap()
-        .as_secs_f64();
-    let objects: Vec<Box<dyn Object>> = vec![
-        // Cyan
-        Box::new(Plane::new_with_color(
-            Vector::new(0.0, 0.0, 15.0),
-            Vector::new(0.0, 0.0, 1.0),
-            Rgb([0, 255, 255]),
-        )),
-        // Yellow
-        Box::new(Sphere::new_with_color(
-            Vector::new(0.0, 0.0, 1.0),
-            0.1,
-            Rgb([255, 255, 0]),
-        )),
-        // Magenta
-        Box::new(Sphere::new(Vector::new(now.cos() * 1.0, 0.0, now.sin() * 2.0 + 2.0), 0.1)),
-    ];
+        .as_secs_f64(); */
 
     let origin = Vector::new(0.0, 0.0, -1.0);
     let upguide = Vector::new(0.0, -1.0, -1.0);
@@ -70,6 +55,13 @@ struct Args {
 fn main() {
     let mut args = Args::parse();
 
+    let file = std::fs::OpenOptions::new()
+        .read(true)
+        .open("scene.json")
+        .unwrap();
+    let objects: Vec<Shape> = serde_json::from_reader(file).unwrap();
+        
+
     let event_loop = glutin::event_loop::EventLoop::new();
     let wb = glutin::window::WindowBuilder::new()
         .with_title("Raytracer")
@@ -87,7 +79,7 @@ fn main() {
     )
     .unwrap();
 
-    let mut texture = render_texture(args.width, args.height, &display);
+    let mut texture = render_texture(args.width, args.height, &display, &objects);
     event_loop.run(move |ev, _, control_flow| {
         /* let next_frame_time =
             std::time::Instant::now() + std::time::Duration::from_nanos(16_666_667);
@@ -113,20 +105,20 @@ fn main() {
                     requested_resume,
                 } => {
                     println!("Rendering new frame");
-                    texture = render_texture(args.width, args.height, &display);
+                    texture = render_texture(args.width, args.height, &display, &objects);
                 }
                 glutin::event::StartCause::WaitCancelled {
                     start,
                     requested_resume,
                 } => (),
                 glutin::event::StartCause::Poll => {
-                    texture = render_texture(args.width, args.height, &display);
-                },
+                    texture = render_texture(args.width, args.height, &display, &objects);
+                }
                 glutin::event::StartCause::Init => (),
             },
             glutin::event::Event::RedrawRequested(_) => {
                 println!("Redraw requested");
-                texture = render_texture(args.width, args.height, &display);
+                texture = render_texture(args.width, args.height, &display, &objects);
             }
             _ => return,
         }

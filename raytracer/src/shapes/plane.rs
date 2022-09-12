@@ -1,5 +1,12 @@
 use serde::{Deserialize, Serialize};
 
+use super::{Intersection, Object, Vector, Shape};
+use crate::{
+    color::{Color, MAGENTA},
+    scene::Ray,
+};
+
+#[derive(Copy, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Plane {
     pub origin: Vector,
@@ -15,11 +22,7 @@ impl Plane {
             color: MAGENTA,
         }
     }
-    pub fn new_with_color(
-        origin: Vector,
-        normal: Vector,
-        color: Color,
-    ) -> Self {
+    pub fn new_with_color(origin: Vector, normal: Vector, color: Color) -> Self {
         let this = Plane::new(origin, normal);
         Plane { color, ..this }
     }

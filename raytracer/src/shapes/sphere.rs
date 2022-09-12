@@ -1,10 +1,13 @@
-use super::{Intersection, Object, Vector};
 use crate::{
     color::{Color, MAGENTA},
     scene::Ray,
+    shapes::{Intersection, Object, Vector},
 };
 use serde::{Deserialize, Serialize};
 
+use super::Shape;
+
+#[derive(Copy, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Sphere {
     pub origin: Vector,
@@ -49,7 +52,7 @@ impl Object for Sphere {
         /* Distance between ray[dt] and the center of the sphere */
         let here_center = maybe_center.metric_distance(&self.origin); */
 
-        // Translate ray to center of sphere
+        // Translate coordinates so that the sphere is centered at the origin
         let ray = ray - self.origin;
         /*
           We need to find the point on the ray that is closest to the center of the sphere
@@ -59,7 +62,7 @@ impl Object for Sphere {
           Point R(t) at distance r: ||R(t)|| = r
           Solve:
             ||R(t)|| = r
-            ||P + t * d|| = r²
+            ||P + t * d|| = r
             (P + dt)(P + dt) = r²
             P² + 2Pdt + dt² - r² = 0
             (d²)t² + 2Pdt + (||P||² - r²) = 0
