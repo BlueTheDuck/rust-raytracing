@@ -14,8 +14,9 @@ pub fn render(
     framebuffer: &mut RgbImage,
     objects: &[Shape],
     camera: &Camera,
-    (width, height): (u32, u32),
 ) {
+    let width = framebuffer.width();
+    let height = framebuffer.height();
     for (px, py, pixel) in framebuffer.enumerate_pixels_mut() {
         let x = (px as f64 / width as f64) * 2.0 - 1.0;
         let y = (py as f64 / height as f64) * 2.0 - 1.0;

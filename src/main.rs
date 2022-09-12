@@ -1,6 +1,6 @@
 extern crate raytracer as rt;
 
-use std::time::SystemTime;
+use std::{time::SystemTime, path::{Path, PathBuf}};
 
 use clap::Parser;
 use glium::{
@@ -30,7 +30,7 @@ fn render_texture(width: u32, height: u32, display: &Display, objects: &[Shape])
     let mut framebuffer: RgbImage = ImageBuffer::new(width, height);
     framebuffer.save("out.png").unwrap();
 
-    render(&mut framebuffer, &objects, &camera, (width, height));
+    render(&mut framebuffer, &objects, &camera);
 
     let raw_image = {
         let dims = framebuffer.dimensions();
