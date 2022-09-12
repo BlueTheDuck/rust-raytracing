@@ -1,9 +1,10 @@
-use super::{Object, Intersection, Vector};
-use crate::{scene::Ray, color::{Color, MAGENTA}};
+use serde::{Deserialize, Serialize};
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Plane {
     pub origin: Vector,
     pub normal: Vector,
+    #[cfg_attr(feature = "serde", serde(with = "crate::color::RgbDef"))]
     pub color: Color,
 }
 impl Plane {

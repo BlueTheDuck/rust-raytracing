@@ -3,10 +3,13 @@ use crate::{
     color::{Color, MAGENTA},
     scene::Ray,
 };
+use serde::{Deserialize, Serialize};
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Sphere {
     pub origin: Vector,
     pub radius: f64,
+    #[cfg_attr(feature = "serde", serde(with = "crate::color::RgbDef"))]
     pub color: Color,
 }
 impl Sphere {

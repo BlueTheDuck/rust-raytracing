@@ -9,3 +9,8 @@ edition = "2021"
 itertools = "0.10.3"
 nalgebra = "0.31.1"
 image = { version = "0.24.2", default-features = false, features = ["png"] }
+serde = { version = "1.0.144", optional = true, features = ["derive"] }
+
+[features]
+default = ["serde"]
+serde = ["dep:serde", "nalgebra/serde-serialize"]

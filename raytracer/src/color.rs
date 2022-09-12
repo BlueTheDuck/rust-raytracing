@@ -1,9 +1,15 @@
 use image::Rgb;
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
 
 pub type Color = Rgb<u8>;
 pub const WHITE: Color = Rgb([255, 255, 255]);
 pub const BLACK: Color = Rgb([0, 0, 0]);
 pub const MAGENTA: Color = Rgb([255, 0, 255]);
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(remote = "Rgb::<u8>"))]
+pub(crate) struct RgbDef([u8; 3]);
 
 /* pub const WHITE: Color = Color { r: 1.0, g: 1.0, b: 1.0 };
 
