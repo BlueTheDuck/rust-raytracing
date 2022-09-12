@@ -50,6 +50,9 @@ struct Args {
 
     #[clap(short, long, default_value_t = 360)]
     height: u32,
+
+    #[clap(long, default_value = "scene.json", value_parser)]
+    scene: PathBuf
 }
 
 fn main() {
@@ -57,7 +60,7 @@ fn main() {
 
     let file = std::fs::OpenOptions::new()
         .read(true)
-        .open("scene.json")
+        .open(args.scene)
         .unwrap();
     let objects: Vec<Shape> = serde_json::from_reader(file).unwrap();
         
