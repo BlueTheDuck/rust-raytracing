@@ -32,6 +32,20 @@ pub enum Shape {
     Sphere(Sphere),
     Plane(Plane),
 }
+impl Shape {
+    pub fn new_sphere(origin: [f64; 3], radius: f64) -> Self {
+        let [x, y, z] = origin;
+        Shape::Sphere(Sphere::new(na::Vector3::new(x, y, z), radius))
+    }
+    pub fn new_plane(origin: [f64; 3], normal: [f64; 3]) -> Self {
+        let [x, y, z] = origin;
+        let [nx, ny, nz] = normal;
+        Shape::Plane(Plane::new(
+            na::Vector3::new(x, y, z),
+            na::Vector3::new(nx, ny, nz),
+        ))
+    }
+}
 impl Object for Shape {
     fn distance(&self, ray: &Ray) -> Intersection {
         match self {
@@ -45,10 +59,29 @@ impl Object for Shape {
             Shape::Plane(plane) => plane.color(),
         }
     }
+    fn set_color(&mut self, color: Color) {
+        match self {
+            Shape::Sphere(sphere) => sphere.set_color(color),
+            Shape::Plane(plane) => plane.set_color(color),
+        }
+    }
 
     fn into_shape(self) -> Shape {
         self
-    }    
+    }
+    fn pos(&self) -> &Vector {
+        match self {
+            Shape::Sphere(sphere) => sphere.pos(),
+            Shape::Plane(plane) => plane.pos(),
+        }
+    }
+    fn set_pos(&mut self, pos: Vector) {
+        match self {
+            Shape::Sphere(sphere) => sphere.set_pos(pos),
+            Shape::Plane(plane) => plane.set_pos(pos),
+        }
+    }
+
     fn tangent(&self, point: Vector) -> Vector {
         match self {
             Shape::Sphere(sphere) => sphere.tangent(point),
@@ -75,6 +108,7 @@ pub trait Object {
     fn color(&self) -> Color {
         WHITE
     }
+    fn set_color(&mut self, color: Color);
     fn into_shape(self) -> Shape;
     fn pos(&self) -> &Vector;
     fn set_pos(&mut self, pos: Vector);  

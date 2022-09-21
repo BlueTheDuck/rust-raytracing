@@ -101,9 +101,19 @@ impl Object for Sphere {
     fn color(&self) -> Color {
         self.color
     }
+    fn set_color(&mut self, color: Color) {
+        self.color = color;
+    }
     fn into_shape(self) -> Shape {
         Shape::Sphere(self)
     }
+    fn pos(&self) -> &Vector {
+        &self.origin
+    }
+    fn set_pos(&mut self, pos: Vector) {
+        self.origin = pos;
+    }
+}
 impl Display for Sphere {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
