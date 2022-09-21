@@ -43,6 +43,10 @@ impl Object for Plane {
         /* TODO: Check for really big `t` t < 3.0 && */
         return Intersection::Hit(t);
     }
+    fn tangent(&self, point: Vector) -> Vector {
+        self.normal
+    }
+
     fn color(&self) -> Color {
         self.color
     }

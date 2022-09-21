@@ -41,6 +41,12 @@ impl Object for Shape {
     fn into_shape(self) -> Shape {
         self
     }    
+    fn tangent(&self, point: Vector) -> Vector {
+        match self {
+            Shape::Sphere(sphere) => sphere.tangent(point),
+            Shape::Plane(plane) => plane.tangent(point),
+        }
+    }
 }
 
 pub enum Intersection {
@@ -57,6 +63,7 @@ pub trait Object {
         }
     }
     fn distance(&self, ray: &Ray) -> Intersection;
+    fn tangent(&self, point: Vector) -> Vector;
     fn color(&self) -> Color {
         WHITE
     }

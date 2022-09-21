@@ -10,6 +10,11 @@ impl Ray {
     pub fn at(&self, t: f64) -> Vector {
         self.origin + self.direction * t
     }
+    pub fn bounce(&self, t: f64, normal: Vector) -> Ray {
+        let direction = self.direction - 2.0 * (self.direction.dot(&normal)) * normal;
+        let origin = self.at(t);
+        Self { origin, direction }
+    }
 }
 impl core::ops::Sub<Vector> for &Ray {
     type Output = Ray;
