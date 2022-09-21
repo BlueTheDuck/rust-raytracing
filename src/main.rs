@@ -101,25 +101,10 @@ fn main() {
                 }
                 _ => return,
             },
-            glutin::event::Event::NewEvents(cause) => match cause {
-                glutin::event::StartCause::ResumeTimeReached {
-                    start,
-                    requested_resume,
-                } => {
-                    println!("Rendering new frame");
-                    texture = render_texture(args.width, args.height, &display, &objects);
-                }
-                glutin::event::StartCause::WaitCancelled {
-                    start,
-                    requested_resume,
-                } => (),
-                glutin::event::StartCause::Poll => {
-                    texture = render_texture(args.width, args.height, &display, &objects);
-                }
-                glutin::event::StartCause::Init => (),
-            },
+            glutin::event::Event::NewEvents(_) => {
+                texture = render_texture(args.width, args.height, &display, &objects);
+            }
             glutin::event::Event::RedrawRequested(_) => {
-                println!("Redraw requested");
                 texture = render_texture(args.width, args.height, &display, &objects);
             }
             _ => return,

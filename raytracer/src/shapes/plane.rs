@@ -1,6 +1,8 @@
+use std::fmt::Display;
+
 use serde::{Deserialize, Serialize};
 
-use super::{Intersection, Object, Vector, Shape};
+use super::{Intersection, Object, Shape, Vector};
 use crate::{
     color::{Color, MAGENTA},
     scene::Ray,
@@ -47,6 +49,7 @@ impl Object for Plane {
     fn into_shape(self) -> Shape {
         Shape::Plane(self)
     }
+
 impl Display for Plane {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // N(X - P) = 0 <-> NX = NP

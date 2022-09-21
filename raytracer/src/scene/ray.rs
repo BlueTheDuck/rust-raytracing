@@ -34,4 +34,3 @@ impl Display for Ray {
         )
     }
 }
-

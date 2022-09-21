@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::{
     color::{Color, MAGENTA},
     scene::Ray,
