@@ -98,4 +98,16 @@ impl Object for Sphere {
     fn into_shape(self) -> Shape {
         Shape::Sphere(self)
     }
+impl Display for Sphere {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "(X-({ox}, {oy}, {oz})) = {r}²",
+            ox = self.origin[0],
+            oy = self.origin[1],
+            oz = self.origin[2],
+            r = self.radius
+        )
+    }
+}
 }

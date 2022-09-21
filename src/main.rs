@@ -1,27 +1,26 @@
 extern crate raytracer as rt;
 
-use std::{time::SystemTime, path::{Path, PathBuf}};
+use std::path::PathBuf;
 
 use clap::Parser;
 use glium::{
     glutin::{self, dpi::LogicalSize},
     uniform, Display, Surface,
 };
-use image::{ImageBuffer, Rgb, RgbImage};
+use image::{ImageBuffer, Rgb};
 use rt::{
     scene::{render, Camera},
     shapes::*,
 };
-use serde::Serialize;
 
 mod window;
 
-fn render_texture(width: u32, height: u32, display: &Display, objects: &[Shape]) -> glium::texture::SrgbTexture2d {
-    println!("Rendering {width}x{height}");
-    /* let now = SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_secs_f64(); */
+fn render_texture(
+    width: u32,
+    height: u32,
+    display: &Display,
+    objects: &[Shape],
+) -> glium::texture::SrgbTexture2d {
 
     let origin = Vector::new(0.0, 0.0, -1.0);
     let upguide = Vector::new(0.0, -1.0, -1.0);
@@ -52,7 +51,7 @@ struct Args {
     height: u32,
 
     #[clap(long, default_value = "scene.json", value_parser)]
-    scene: PathBuf
+    scene: PathBuf,
 }
 
 fn main() {
@@ -63,7 +62,7 @@ fn main() {
         .open(args.scene)
         .unwrap();
     let objects: Vec<Shape> = serde_json::from_reader(file).unwrap();
-        
+
 
     let event_loop = glutin::event_loop::EventLoop::new();
     let wb = glutin::window::WindowBuilder::new()

@@ -47,4 +47,18 @@ impl Object for Plane {
     fn into_shape(self) -> Shape {
         Shape::Plane(self)
     }
+impl Display for Plane {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // N(X - P) = 0 <-> NX = NP
+        write!(
+            f,
+            "({nx}, {ny}, {nz})·(X - ({ox}, {oy}, {oz})) = 0",
+            nx = self.normal[0],
+            ny = self.normal[1],
+            nz = self.normal[2],
+            ox = self.origin[0],
+            oy = self.origin[1],
+            oz = self.origin[2],
+        )
+    }
 }

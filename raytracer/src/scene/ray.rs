@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::shapes::Vector;
 
 pub struct Ray {
@@ -18,3 +20,18 @@ impl core::ops::Sub<Vector> for &Ray {
         }
     }
 }
+impl Display for Ray {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "({ox}, {oy}, {oz}) + t({dx}, {dy}, {dz})",
+            ox = self.origin[0],
+            oy = self.origin[1],
+            oz = self.origin[2],
+            dx = self.direction[0],
+            dy = self.direction[1],
+            dz = self.direction[2]
+        )
+    }
+}
+

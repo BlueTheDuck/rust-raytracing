@@ -1,4 +1,4 @@
-use std::any::Any;
+use std::fmt::Display;
 
 use crate::{
     color::{Color, WHITE},
@@ -61,4 +61,14 @@ pub trait Object {
         WHITE
     }
     fn into_shape(self) -> Shape;
+    fn pos(&self) -> &Vector;
+    fn set_pos(&mut self, pos: Vector);  
+}
+impl Display for Shape {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Shape::Sphere(sphere) => write!(f, "{}", sphere),
+            Shape::Plane(plane) => write!(f, "{}", plane),
+        }
+    }
 }
