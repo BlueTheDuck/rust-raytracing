@@ -27,8 +27,9 @@ fn render_texture(width: u32, height: u32, display: &Display, objects: &[Shape])
     let upguide = Vector::new(0.0, -1.0, -1.0);
     let camera = Camera::new(60.0, Vector::zeros(), origin);
 
-    let mut framebuffer: RgbImage = ImageBuffer::new(width, height);
-    framebuffer.save("out.png").unwrap();
+    let mut framebuffer = ImageBuffer::new(width, height);
+    // This panics for some reason:
+    // framebuffer.save("out.png").unwrap();
 
     render(&mut framebuffer, &objects, &camera);
 
@@ -39,7 +40,6 @@ fn render_texture(width: u32, height: u32, display: &Display, objects: &[Shape])
 
     let texture = glium::texture::SrgbTexture2d::new(display, raw_image).unwrap();
 
-    println!("Done rendering");
     return texture;
 }
 

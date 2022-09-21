@@ -2,19 +2,15 @@ mod camera;
 mod ray;
 
 pub use camera::Camera;
-use image::RgbImage;
+use image::{Rgb, Rgb32FImage};
 pub use ray::Ray;
 
 use crate::{
     color::Color,
-    shapes::{Intersection, Object, Shape},
+    shapes::{Intersection, Object, Shape, Vector},
 };
 
-pub fn render(
-    framebuffer: &mut RgbImage,
-    objects: &[Shape],
-    camera: &Camera,
-) {
+pub fn render(framebuffer: &mut Rgb32FImage, objects: &[Shape], camera: &Camera) {
     let width = framebuffer.width();
     let height = framebuffer.height();
     for (px, py, pixel) in framebuffer.enumerate_pixels_mut() {
