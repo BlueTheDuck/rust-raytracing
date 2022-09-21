@@ -54,8 +54,23 @@ struct Args {
     scene: PathBuf,
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = Args::parse();
+
+    if !args.scene.exists() {
+        let mut scene_example = [
+            Shape::new_plane([0.0, 0.0, 1.0], [0.0, 0.0, 1.0]),
+            Shape::new_sphere([0.0, 0.0, 1.0], 0.1),
+            Shape::new_sphere([1.0, 0.0, 1.0], 0.1),
+        ];
+        scene_example[0].set_color(Rgb([0.0, 0.5, 1.0]));
+        scene_example[1].set_color(Rgb([1.0, 1.0, 0.0]));
+        scene_example[2].set_color(Rgb([1.0, 0.0, 1.0]));
+        let scene_example = serde_json::to_string_pretty(&scene_example)?;
+        std::fs::write(&args.scene, scene_example)?;
+        println!("Created example scene at {}", args.scene.display());
+        std::process::exit(1);
+    }
 
     let file = std::fs::OpenOptions::new()
         .read(true)
