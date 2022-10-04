@@ -15,21 +15,34 @@ use crate::{
 const MIN_T: f64 = 0.001;
 
 pub fn render(framebuffer: &mut Rgb32FImage, objects: &[Shape], camera: &Camera, light: &Vector) {
-    let width = framebuffer.width();
-    let height = framebuffer.height();
+    const SAMPLES: usize = 4;
+    let width: f64 = framebuffer.width() as _;
+    let height: f64 = framebuffer.height() as _;
+    let rng = fastrand::Rng::new();
+    // let numbers = repeat_with(|| rng.f64()).take((width * height * 2).try_into().unwrap());
+
     for (px, py, pixel) in framebuffer.enumerate_pixels_mut() {
         let mut color: Color = Rgb([0., 0., 0.]);
-        for (dx, dy) in [0, 1].iter().cartesian_product([0, 1]) {
-            let x = ((px as i32 + dx) as f64 / width as f64) * 2.0 - 1.0;
-            let y = ((py as i32 + dy) as f64 / height as f64) * 2.0 - 1.0;
+        for _ in 0..SAMPLES {
+            let (dx, dy) = ((rng.f64() - 0.5) / width, (rng.f64() - 0.5) / height);
+
+            let x = (px as f64 / width) * 2.0 - 1.0 + dx;
+            let y = (py as f64 / height) * 2.0 - 1.0 + dy;
             let ray = camera.ray(x, y);
             let closest = find_closest(&ray, objects);
             if let Some((t, obj)) = closest {
                 let at = ray.at(t);
-                let shadow_ray = Ray {
-                    origin: at,
-                    direction: (light - at).normalize(),
-                };
+                let brightness = light_brightness(at, &obj.normal(at), objects, light);
+                debug_assert!(brightness.is_sign_positive(), "brightness = {brightness}");
+                let this_color = obj.color().map(|c| c * brightness);
+                color.apply2(&this_color, |c1, c2| c1 + c2);
+            }
+        }
+        color.apply(|c| c / 4.0);
+        color.apply(gamma_correction);
+        *pixel = color;
+    }
+}
 
                 let brightness = light_brightness(at, &obj.tangent(at), objects, light);
                 let this_color = obj.color().map(|c| c * brightness);
@@ -80,4 +93,10 @@ fn find_closest<'s>(ray: &Ray, objects: &'s [Shape]) -> Option<(f64, &'s Shape)>
     }
 
     return closest;
+}
+
+fn gamma_correction(channel: f32) -> f32 {
+    const EXP: f32 = 1.0;
+    const GAMMA: f32 = 2.2;
+    (channel * EXP).powf(GAMMA)
 }
