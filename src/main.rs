@@ -9,7 +9,7 @@ use glium::{
 };
 use image::{ImageBuffer, Rgb};
 use rt::{
-    scene::{render, Camera},
+    scene::{render, Camera, parallel_render},
     shapes::*,
 };
 
@@ -21,7 +21,6 @@ fn render_texture(
     display: &Display,
     objects: &[Shape],
 ) -> glium::texture::SrgbTexture2d {
-
     let origin = Vector::new(0.0, 0.0, -1.0);
     let upguide = Vector::new(0.0, -1.0, -1.0);
     let camera = Camera::new(60.0, Vector::zeros(), origin);
@@ -30,16 +29,58 @@ fn render_texture(
     // This panics for some reason:
     // framebuffer.save("out.png").unwrap();
 
-    render(&mut framebuffer, &objects, &camera);
+    let dt: f64 = std::time::UNIX_EPOCH.elapsed().unwrap().as_millis() as _;
+    let l1 = (dt * 0.001).sin() * 1.0;
+    let light = Vector::new(0.0, l1, 0.0);
+
+    // render(&mut framebuffer, &objects, &camera, &light);
+    parallel_render(&mut framebuffer, &objects, &camera, &light);
 
     let raw_image = {
         let dims = framebuffer.dimensions();
-        glium::texture::RawImage2d::from_raw_rgb_reversed(&framebuffer.into_raw(), dims)
+        // glium::texture::RawImage2d::from_raw_rgb_reversed(&framebuffer.into_raw(), dims)
+        glium::texture::RawImage2d::from_raw_rgb(framebuffer.into_raw(), dims)
     };
 
     let texture = glium::texture::SrgbTexture2d::new(display, raw_image).unwrap();
 
     return texture;
+}
+
+fn file_render(
+    width: u32,
+    height: u32,
+    objects: &[Shape],
+){
+    let origin = Vector::new(0.0, 0.0, -1.0);
+    let upguide = Vector::new(0.0, -1.0, -1.0);
+    let camera = Camera::new(60.0, Vector::zeros(), origin);
+
+    let mut framebuffer = ImageBuffer::new(width, height);
+    // This panics for some reason:
+    // framebuffer.save("out.png").unwrap();
+
+    let dt: f64 = std::time::UNIX_EPOCH.elapsed().unwrap().as_millis() as _;
+    let l1 = (dt * 0.0001).sin() * 1.0;
+    // let l2 = (dt * 0.0001).cos() * 0.0;
+    let light = Vector::new(0.0, l1, 0.0);
+
+    // render(&mut framebuffer, &objects, &camera, &light);
+    parallel_render(&mut framebuffer, &objects, &camera, &light);
+
+    let mut framebuffer2 = ImageBuffer::new(width, height);
+    for (x, y, pixel) in framebuffer.enumerate_pixels() {
+        let channels: [u8; 3] = [
+            (pixel.0[0] * 256.0) as _,
+            (pixel.0[1] * 256.0) as _,
+            (pixel.0[2] * 256.0) as _,
+        ];
+        let pixel = Rgb(channels);
+        let pixel2 = framebuffer2.get_pixel_mut(x, y);
+        *pixel2 = pixel;
+    }
+    
+    framebuffer2.save(format!("screenshots/out_{dt}.png")).unwrap();
 }
 
 #[derive(Parser)]
@@ -88,6 +129,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let vertex_buffer = glium::VertexBuffer::new(&display, &window::RECT).unwrap();
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TrianglesList);
+    
     let program = glium::Program::from_source(
         &display,
         include_str!("vertex.glsl"),
@@ -96,12 +138,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     )
     .unwrap();
 
+    file_render(args.width, args.height, &objects);
+
     let mut texture = render_texture(args.width, args.height, &display, &objects);
     event_loop.run(move |ev, _, control_flow| {
-        /* let next_frame_time =
+        let next_frame_time =
             std::time::Instant::now() + std::time::Duration::from_nanos(16_666_667);
-        control_flow.set_wait_until(next_frame_time); */
-        control_flow.set_poll();
+        control_flow.set_wait_until(next_frame_time);
+        /* control_flow.set_poll(); */
 
         match ev {
             glutin::event::Event::WindowEvent { event, .. } => match event {
