@@ -82,10 +82,10 @@ impl Object for Shape {
         }
     }
 
-    fn tangent(&self, point: Vector) -> Vector {
+    fn normal(&self, point: Vector) -> Vector {
         match self {
-            Shape::Sphere(sphere) => sphere.tangent(point),
-            Shape::Plane(plane) => plane.tangent(point),
+            Shape::Sphere(sphere) => sphere.normal(point),
+            Shape::Plane(plane) => plane.normal(point),
         }
     }
 }
@@ -104,7 +104,7 @@ pub trait Object {
         }
     }
     fn distance(&self, ray: &Ray) -> Intersection;
-    fn tangent(&self, point: Vector) -> Vector;
+    fn normal(&self, point: Vector) -> Vector;
     fn color(&self) -> Color {
         WHITE
     }

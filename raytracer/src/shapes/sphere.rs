@@ -94,7 +94,7 @@ impl Object for Sphere {
             Intersection::Miss
         }
     }
-    fn tangent(&self, point: Vector) -> Vector {
+    fn normal(&self, point: Vector) -> Vector {
         let point = (point - self.origin).normalize();
         point
     }
