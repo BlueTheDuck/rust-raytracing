@@ -11,6 +11,7 @@ nalgebra = "0.31.1"
 image = { version = "0.24.2", default-features = false, features = ["png"] }
 serde = { version = "1.0.144", optional = true, features = ["derive"] }
 fastrand = "1.8.0"
+rayon = "1.5.3"
 
 [features]
 default = ["serde"]
