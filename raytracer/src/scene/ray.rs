@@ -7,6 +7,13 @@ pub struct Ray {
     pub direction: Vector,
 }
 impl Ray {
+    /// Creates a new ray from an origin, pointing towards a target.
+    pub fn new_with_from_target(from: Vector, target: &Vector) -> Self {
+        Self {
+            origin: from,
+            direction: (target - from).normalize(),
+        }
+    }
     pub fn at(&self, t: f64) -> Vector {
         self.origin + self.direction * t
     }

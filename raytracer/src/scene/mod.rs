@@ -14,34 +14,15 @@ use crate::{
 };
 
 const MIN_T: f64 = 0.001;
+const SAMPLES: usize = 4;
 
 pub fn render(framebuffer: &mut Rgb32FImage, objects: &[Shape], camera: &Camera, light: &Vector) {
-    const SAMPLES: usize = 4;
     let width: f64 = framebuffer.width() as _;
     let height: f64 = framebuffer.height() as _;
     let rng = fastrand::Rng::new();
-    let mut deltas = [(0., 0.); SAMPLES + 1];
-    deltas[1..].fill_with(|| (rng.f64() - 0.5, rng.f64() - 0.5));
-    let deltas = deltas;
 
     for (px, py, pixel) in framebuffer.enumerate_pixels_mut() {
-        let mut color: Color = Rgb([0., 0., 0.]);
-        for (dx, dy) in deltas {
-            let x = ((px as f64 + dx) / width) * 2.0 - 1.0 + dx;
-            let y = ((py as f64 + dy) / height) * 2.0 - 1.0 + dy;
-            let ray = camera.ray(x, y);
-            let closest = find_closest(&ray, objects);
-            if let Some((t, obj)) = closest {
-                let at = ray.at(t);
-                let brightness = light_brightness(at, &obj.normal(at), objects, light);
-                debug_assert!(brightness.is_sign_positive(), "brightness = {brightness}");
-                let this_color = obj.color().map(|c| c * brightness);
-                color.apply2(&this_color, |c1, c2| c1 + c2);
-            }
-        }
-        color.apply(|c| c / 4.0);
-        color.apply(gamma_correction);
-        *pixel = color;
+        *pixel = render_pixel((px, py), (width, height), objects, camera, light, &rng);
     }
 }
 
@@ -58,24 +39,22 @@ pub fn parallel_render(
         .par_bridge()
         .for_each_init(
             || Rng::new(),
-            |rng, pix| {
-                render_pixel(pix, (width, height), objects, camera, light, &rng);
+            |rng, (px, py, pixel)| {
+                *pixel = render_pixel((px, py), (width, height), objects, camera, light, &rng);
             },
         );
 }
 
 fn render_pixel(
-    (px, py, pixel): (u32, u32, &mut Rgb<f32>),
+    (px, py): (u32, u32),
     (width, height): (f64, f64),
     objects: &[Shape],
     camera: &Camera,
     light: &Vector,
     rng: &Rng,
-) {
-    const DITH_COUNT: usize = 4;
-
+) -> Rgb<f32> {
     let mut color: Color = Rgb([0., 0., 0.]);
-    let mut dithers = [(0., 0.); DITH_COUNT + 1];
+    let mut dithers = [(0., 0.); SAMPLES + 1];
     dithers[1..].fill_with(|| (rng.f64() - 0.5, rng.f64() - 0.5));
     let dithers = dithers;
 
@@ -92,23 +71,19 @@ fn render_pixel(
             color.apply2(&this_color, |c1, c2| c1 + c2);
         }
     }
-    color.apply(|c| c / (DITH_COUNT as f32));
+    color.apply(|c| c / ((SAMPLES + 1) as f32));
     color.apply(gamma_correction);
-    *pixel = color;
+    return color;
 }
 
 fn light_brightness(at: Vector, normal: &Vector, objects: &[Shape], light: &Vector) -> f32 {
     // Light vector pointing towards `at`
-    let light_dir = (light - at).normalize();
-    let light_ray = Ray {
-        origin: at,
-        direction: light_dir,
-    };
+    let light_ray = Ray::new_with_from_target(at, light);
     let closest = find_closest(&light_ray, objects);
     if closest.is_some() {
         0.0
     } else {
-        light_dir.dot(&normal).max(0.0) as _
+        light_ray.direction.dot(&normal).max(0.0) as _
     }
 }
 
