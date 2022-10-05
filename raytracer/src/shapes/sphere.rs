@@ -1,13 +1,12 @@
 use std::fmt::Display;
 
+use serde::{Deserialize, Serialize};
+
 use crate::{
     color::{Color, MAGENTA},
     scene::Ray,
-    shapes::{Intersection, Object, Vector},
+    shapes::{Intersection, Object, Vector, Shape},
 };
-use serde::{Deserialize, Serialize};
-
-use super::Shape;
 
 #[derive(Copy, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -81,12 +80,12 @@ impl Object for Sphere {
         // Discriminant
         let discriminant = b.powi(2) - 4.0 * a * c;
 
-        if discriminant > 0.0 {
+        if float!(discriminant > 0) {
             // 2 hit points / ray goes through sphere
             let t1 = (-b + discriminant.sqrt()) / (2.0 * a);
             let t2 = (-b - discriminant.sqrt()) / (2.0 * a);
-            Intersection::Hit(t1.min(t2))
-        } else if discriminant == 0.0 {
+            Intersection::Hit(t1.min(t2).max(0.0))
+        } else if float!(discriminant -> 0) {
             // 1 hit point / ray is tangent to sphere
             Intersection::Hit(-b / (2.0 * a))
         } else {
@@ -126,4 +125,4 @@ impl Display for Sphere {
         )
     }
 }
-}
+

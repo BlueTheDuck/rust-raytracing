@@ -29,8 +29,8 @@ impl Camera {
         }
     }
     pub fn ray(&self, x: f64, y: f64) -> Ray {
-        debug_assert!(x >= -1.0 && x <= 1.0, "({x}; {y})");
-        debug_assert!(y >= -1.0 && y <= 1.0, "({x}; {y})");
+        // debug_assert!(x >= -1.0 && x <= 1.0, "({x}; {y})");
+        // debug_assert!(y >= -1.0 && y <= 1.0, "({x}; {y})");
         let direction: na::Vector3<_> =
             self.forward + self.right * x * self.width + self.up * y * self.height;
         Ray {

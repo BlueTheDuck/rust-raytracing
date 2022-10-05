@@ -2,10 +2,10 @@ use std::fmt::Display;
 
 use serde::{Deserialize, Serialize};
 
-use super::{Intersection, Object, Shape, Vector};
 use crate::{
     color::{Color, MAGENTA},
     scene::Ray,
+    shapes::{Intersection, Object, Shape, Vector},
 };
 
 #[derive(Copy, Clone)]
@@ -32,11 +32,11 @@ impl Plane {
 impl Object for Plane {
     fn distance(&self, ray: &Ray) -> Intersection {
         let denom = self.normal.dot(&ray.direction);
-        if denom.abs() < f64::EPSILON {
+        if float!(denom -> 0) {
             return Intersection::Miss;
         }
         let t = (self.origin - ray.origin).dot(&self.normal) / denom;
-        if t < f64::EPSILON {
+        if float!(t < 0) {
             return Intersection::Miss;
         }
         // println!("{t}");

@@ -5,10 +5,13 @@ use crate::{
     scene::Ray,
 };
 
-pub type Vector = na::Vector3<f64>;
-
 mod plane;
 mod sphere;
+
+pub use plane::Plane;
+pub use sphere::Sphere;
+
+pub type Vector = na::Vector3<f64>;
 
 pub const ORIGIN: Vector = na::Vector3::new(0.0, 0.0, 0.0);
 pub const ZP: Vector = na::Vector3::new(0.0, 0.0, 1.0);
@@ -18,16 +21,12 @@ pub const XN: Vector = na::Vector3::new(-1.0, 0.0, 0.0);
 pub const YP: Vector = na::Vector3::new(0.0, 1.0, 0.0);
 pub const YN: Vector = na::Vector3::new(0.0, -1.0, 0.0);
 
-pub use plane::Plane;
-pub use sphere::Sphere;
-
 #[cfg_attr(
     feature = "serde",
     derive(serde::Serialize, serde::Deserialize),
     serde(tag = "type")
 )]
 #[derive(Clone, Copy)]
-
 pub enum Shape {
     Sphere(Sphere),
     Plane(Plane),

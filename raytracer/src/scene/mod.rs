@@ -1,19 +1,18 @@
 use fastrand::Rng;
-use rayon::prelude::*;
-
-mod camera;
-mod ray;
-
-pub use camera::Camera;
 use image::{Pixel, Rgb, Rgb32FImage};
-pub use ray::Ray;
+use rayon::prelude::*;
 
 use crate::{
     color::Color,
     shapes::{Intersection, Object, Shape, Vector},
 };
 
-const MIN_T: f64 = 0.001;
+mod camera;
+mod ray;
+
+pub use camera::Camera;
+pub use ray::Ray;
+
 const SAMPLES: usize = 4;
 
 pub fn render(framebuffer: &mut Rgb32FImage, objects: &[Shape], camera: &Camera, light: &Vector) {
@@ -92,12 +91,10 @@ fn find_closest<'s>(ray: &Ray, objects: &'s [Shape]) -> Option<(f64, &'s Shape)>
     for obj in objects {
         if let Intersection::Hit(t) = obj.distance(&ray) {
             debug_assert!(t.is_finite(), "hit produced an inf");
+            debug_assert!(float!(t > 0), "hit produced a negative {t}");
             // debug_assert!(t >= 0.0 && t.is_finite(), "t is {t:#?}. Ray {ray} -> {obj}");
-            if t.is_sign_negative() {
-                continue;
-            }
             // Don't collide with self
-            if t.abs() < MIN_T {
+            if float!(t -> 0) {
                 continue;
             }
             if let Some((closest_t, _)) = closest {
